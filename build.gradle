@@ -1,0 +1,126 @@
+group 'com.service'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+ext {
+    springBootVersion = '2.0.6.RELEASE'
+    springVersion = '4.3.14.RELEASE'
+    commonsCollectionVersion = '3.2.2'
+    commonsFileUploadVersion = '1.3.1'
+    commonsCodecVersion = '1.10'
+    commonsLangVersion = '3.4'
+    guavaVersion = '23.0'
+    jacksonVersion = '2.8.11'
+    validationApiVersion = '1.1.0.Final'
+    zookeeperVersion = '3.4.9'
+    zkclientVersion = '0.1'
+    mockitoVersion = '1.10.19'
+    log4jBridgeVersion = '2.2'
+    catClientVersion = '2.2.8'
+    catDubboFilterVersion = '1.0.7'
+    leoClientVersion = '1.0.9'
+    lombokVersion = '1.16.12'
+    fastjsonVersion = '1.2.51'
+    log4jVersion = '2.11.1'
+    mockitoVersion = '1.10.19'
+    lionClientVersion = '2.4.2'
+    env = System.getProperty("env") == null ? "development" : System.getProperty("env")
+}
+
+buildscript {
+    ext {
+        springBootVersion = '1.5.4.RELEASE'
+        nexusUrl = 'http://maven.aliyun.com/nexus/content/groups/public/'
+    }
+
+    repositories {
+        maven { url "$nexusUrl" }
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion")
+    }
+}
+
+repositories {
+    maven { url "$nexusUrl" }
+}
+
+
+allprojects {
+}
+subprojects {
+    apply plugin: 'idea'
+    apply plugin: 'java'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    configurations {
+        all*.exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+        all*.exclude group: "org.slf4j", module: "slf4j-log4j12"
+        all*.exclude group: "org.slf4j", module: "slf4j-jdk14"
+    }
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+
+    repositories {
+        maven { url "$nexusUrl" }
+    }
+
+    sourceSets {
+        main {
+            resources {
+                srcDirs = ["src/main/resources/base", "src/main/resources/$env"]
+            }
+        }
+        test {
+            resources {
+                srcDirs = ["src/test/resources/base", "src/test/resources/$env"]
+            }
+        }
+    }
+    dependencies {
+        compile "org.projectlombok:lombok:$lombokVersion"
+        compile "commons-collections:commons-collections:$commonsCollectionVersion"
+        compile "commons-codec:commons-codec:$commonsCodecVersion"
+        compile "org.apache.commons:commons-lang3:$commonsLangVersion"
+        compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+        compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+        compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+        compile "javax.validation:validation-api:$validationApiVersion"
+        compile "org.apache.logging.log4j:log4j-1.2-api:$log4jBridgeVersion"
+        compile "org.apache.logging.log4j:log4j-core:$log4jVersion"
+        compile "org.apache.logging.log4j:log4j-api:$log4jVersion"
+        compile "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
+        compile "com.github.sgroschupf:zkclient:$zkclientVersion"
+        compile "org.apache.zookeeper:zookeeper:$zookeeperVersion"
+        compile "com.alibaba:fastjson:$fastjsonVersion"
+        testCompile "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+        testCompile "org.mockito:mockito-all:$mockitoVersion"
+    }
+}
+
+project(":hyacinth-client") {
+
+    dependencies {
+        compile "com.google.guava:guava:$guavaVersion"
+    }
+}
+
+project(":hyacinth-service") {
+    dependencies {
+        compile project(":hyacinth-client")
+        compile "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
+        compile "org.springframework.boot:spring-boot-starter-aop:$springBootVersion"
+        compile "org.springframework.boot:spring-boot-starter-actuator:$springBootVersion"
+        compile "org.springframework.boot:spring-boot-starter-cache:$springBootVersion"
+        compile "org.springframework.boot:spring-boot-starter:$springBootVersion"
+        compile "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+        compile "org.springframework.boot:spring-boot-starter-log4j2:$springBootVersion"
+    }
+}

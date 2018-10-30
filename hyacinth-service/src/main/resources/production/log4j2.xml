@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <Property name="PID">????</Property>
+        <Property name="APP_NAME">hyacinth-service</Property>
+        <Property name="LOG_EXCEPTION_CONVERSION_WORD">%xEx</Property>
+        <Property name="LOG_LEVEL_PATTERN">%5p</Property>
+        <Property name="LOG_PATTERN">${hostName} ${APP_NAME} %d{yyyy-MM-dd HH:mm:ss.SSS} ${LOG_LEVEL_PATTERN} ${sys:PID} [%15.15t]%-40.40c{1.} : [%X{logId}] %m%n${LOG_EXCEPTION_CONVERSION_WORD}
+        </Property>
+        <Property name="LOG_PATH">./logs</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+        <Kafka name="Kafka" topic="${sys:log4j2.kafka.topic}">
+            <Property name="bootstrap.servers">${sys:log4j2.kafka.bootstrap.servers}</Property>
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Kafka>
+
+        <Async name="AsyncKafka" bufferSize="1024" blocking="false">
+            <AppenderRef ref="Kafka"/>
+        </Async>
+        <Async name="AsyncConsole" bufferSize="1024" blocking="false">
+            <AppenderRef ref="Console"/>
+        </Async>
+        <CatAppender name="CatAppender"/>
+    </Appenders>
+    <Loggers>
+        <Logger name="org.apache.catalina.startup.DigesterFactory" level="error"/>
+        <Logger name="org.apache.catalina.util.LifecycleBase" level="error"/>
+        <Logger name="org.apache.coyote.http11.Http11NioProtocol" level="warn"/>
+        <logger name="org.apache.sshd.common.util.SecurityUtils" level="warn"/>
+        <Logger name="org.apache.tomcat.util.net.NioSelectorPool" level="warn"/>
+        <Logger name="org.crsh.plugin" level="warn"/>
+        <logger name="org.crsh.ssh" level="warn"/>
+        <Logger name="org.eclipse.jetty.util.component.AbstractLifeCycle" level="error"/>
+        <Logger name="org.hibernate.validator.internal.util.Version" level="warn"/>
+        <logger name="org.springframework.boot.actuate.autoconfigure.CrshAutoConfiguration" level="warn"/>
+        <logger name="org.springframework.boot.actuate.endpoint.jmx" level="warn"/>
+        <logger name="org.thymeleaf" level="warn"/>
+        <Root level="info">
+            <AppenderRef ref="AsyncConsole" level="warn"/>
+            <AppenderRef ref="AsyncKafka"/>
+            <AppenderRef ref="CatAppender"/>
+        </Root>
+        <Logger name="log4j.logger.java.sql.Connection" level="debug"/>
+        <Logger name="log4j.logger.java.sql.Statement" level="debug"/>
+        <Logger name="log4j.logger.java.sql.PreparedStatement" level="debug"/>
+    </Loggers>
+</Configuration>

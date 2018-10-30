@@ -1,0 +1,4 @@
+rootProject.name = 'hyacinth'
+include 'hyacinth-client'
+include 'hyacinth-service'
+

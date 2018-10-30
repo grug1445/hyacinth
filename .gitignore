@@ -1,0 +1,12 @@
+*.iml
+.idea
+target
+out
+build
+.DS_Store
+*.jar
+logs/
+.gradle
+.gradletasknamecache
+classes/
+/upload
